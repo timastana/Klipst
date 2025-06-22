@@ -1,0 +1,257 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  role          UserRole  @default(TENANT)
+  phone         String?
+  address       String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts           Account[]
+  sessions           Session[]
+  ownedProperties    Property[]        @relation("PropertyOwner")
+  tenantApplications Application[]
+  rentPayments       RentPayment[]
+  favorites          PropertyFavorite[]
+  viewingRequests    ViewingRequest[]
+  documents          Document[]
+  notifications      Notification[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+enum UserRole {
+  ADMIN
+  LANDLORD
+  TENANT
+}
+
+model Property {
+  id          String        @id @default(cuid())
+  title       String
+  description String        @db.Text
+  address     String
+  city        String
+  postcode    String
+  country     String        @default("UK")
+  latitude    Float?
+  longitude   Float?
+  price       Float
+  bedrooms    Int
+  bathrooms   Int
+  propertyType PropertyType
+  status      PropertyStatus @default(AVAILABLE)
+  furnished   Boolean       @default(false)
+  petFriendly Boolean       @default(false)
+  garden      Boolean       @default(false)
+  parking     Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  ownerId String
+  owner   User   @relation("PropertyOwner", fields: [ownerId], references: [id])
+
+  images       PropertyImage[]
+  applications Application[]
+  rentPayments RentPayment[]
+  favorites    PropertyFavorite[]
+  viewings     ViewingRequest[]
+  documents    Document[]
+
+  @@index([city, propertyType, status])
+  @@index([price])
+}
+
+enum PropertyType {
+  HOUSE
+  FLAT
+  STUDIO
+  ROOM
+  COMMERCIAL
+}
+
+enum PropertyStatus {
+  AVAILABLE
+  RENTED
+  MAINTENANCE
+  UNAVAILABLE
+}
+
+model PropertyImage {
+  id         String   @id @default(cuid())
+  url        String
+  alt        String?
+  isPrimary  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+}
+
+model PropertyFavorite {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, propertyId])
+}
+
+model Application {
+  id        String            @id @default(cuid())
+  status    ApplicationStatus @default(PENDING)
+  message   String?           @db.Text
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  tenantId   String
+  tenant     User     @relation(fields: [tenantId], references: [id])
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id])
+
+  @@unique([tenantId, propertyId])
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model RentPayment {
+  id            String        @id @default(cuid())
+  amount        Float
+  dueDate       DateTime
+  paidDate      DateTime?
+  status        PaymentStatus @default(PENDING)
+  paymentMethod String?
+  stripePaymentId String?
+  paypalPaymentId String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  tenantId   String
+  tenant     User     @relation(fields: [tenantId], references: [id])
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id])
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  OVERDUE
+  FAILED
+}
+
+model ViewingRequest {
+  id            String             @id @default(cuid())
+  requestedDate DateTime
+  status        ViewingStatus      @default(PENDING)
+  message       String?            @db.Text
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id])
+}
+
+enum ViewingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+model Document {
+  id       String      @id @default(cuid())
+  title    String
+  filename String
+  url      String
+  type     DocumentType
+  size     Int?
+  createdAt DateTime   @default(now())
+
+  userId     String?
+  user       User?     @relation(fields: [userId], references: [id])
+  propertyId String?
+  property   Property? @relation(fields: [propertyId], references: [id])
+}
+
+enum DocumentType {
+  ID
+  LEASE_AGREEMENT
+  CONTRACT
+  PROPERTY_IMAGE
+  CERTIFICATE
+  OTHER
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String   @db.Text
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ContractTemplate {
+  id        String   @id @default(cuid())
+  name      String
+  content   String   @db.Text
+  variables Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

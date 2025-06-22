@@ -1,147 +1,183 @@
-# MicroRealEstate
+# Klipst - Property Management Platform
 
-[![Continuous Integration](https://github.com/microrealestate/microrealestate/actions/workflows/ci.yml/badge.svg?event=push)](https://github.com/microrealestate/microrealestate/actions/workflows/ci.yml)
+A comprehensive property management web application built with Next.js, PostgreSQL, and modern web technologies.
 
-MicroRealEstate is an open-source application designed to assist landlords in managing their properties and rentals. MicroRealEstate (MRE) serves as a centralized platform for landlords to streamline their property management tasks.
+## Features
+
+- 🏠 **Property Management**: Complete CRUD operations for properties
+- 👥 **User Management**: Landlords, tenants, and admin roles
+- 💳 **Payment Processing**: Stripe and PayPal integration
+- 📱 **Responsive Design**: Mobile-first approach with Tailwind CSS
+- 🔐 **Authentication**: NextAuth.js with multiple providers
+- 📄 **Document Management**: File uploads for contracts and IDs
+- 🗺️ **Map Integration**: Interactive maps with Leaflet.js
+- 🔍 **Advanced Search**: Location-based search with filters
+- 📊 **Admin Dashboard**: Comprehensive management interface
+- 🌐 **Multi-language**: i18n support ready
+- 🎨 **Theming**: Dark/light mode with customizable themes
+
+## Tech Stack
+
+- **Frontend**: Next.js 14, React, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes, Prisma ORM
+- **Database**: PostgreSQL
+- **Authentication**: NextAuth.js
+- **Payments**: Stripe, PayPal
+- **File Upload**: Custom upload handler
+- **Maps**: Leaflet.js
+- **Deployment**: Vercel/Docker ready
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- PostgreSQL database
+- Stripe account (for payments)
+- Google Places API key (optional)
+
+### Installation
+
+1. Clone the repository:
+\`\`\`bash
+git clone https://github.com/timastana/Klipst.git
+cd Klipst
+\`\`\`
+
+2. Install dependencies:
+\`\`\`bash
+npm install
+\`\`\`
+
+3. Set up environment variables:
+\`\`\`bash
+cp .env.example .env
+\`\`\`
+
+Fill in your environment variables in `.env`.
+
+4. Set up the database:
+\`\`\`bash
+npm run db:push
+npm run db:seed
+\`\`\`
+
+5. Run the development server:
+\`\`\`bash
+npm run dev
+\`\`\`
+
+Open [http://localhost:3000](http://localhost:3000) to view the application.
+
+### Docker Setup
+
+1. Build and run with Docker Compose:
+\`\`\`bash
+npm run docker:up
+\`\`\`
+
+2. The application will be available at [http://localhost:3000](http://localhost:3000)
+
+## Project Structure
+
+\`\`\`
+├── app/                    # Next.js app directory
+│   ├── api/               # API routes
+│   ├── auth/              # Authentication pages
+│   ├── properties/        # Property pages
+│   └── admin/             # Admin dashboard
+├── components/            # Reusable components
+│   ├── ui/               # UI components
+│   └── layout/           # Layout components
+├── lib/                  # Utility libraries
+├── prisma/               # Database schema and migrations
+├── public/               # Static assets
+└── types/                # TypeScript type definitions
+\`\`\`
 
 ## Key Features
 
-- Centralized Property and Tenant Information: MRE allows landlords to store all property and tenant details in one convenient location. From property specifications to tenant records and contact information.
+### Property Management
+- Create, read, update, delete properties
+- Image gallery with multiple photos
+- Advanced filtering and search
+- Map view with property pins
+- Property comparison
 
-- Rent Lease Creation: MRE simplifies the process of creating rent leases. It offers customizable templates that enable landlords to generate lease.
+### User Roles
+- **Admin**: Full system access
+- **Landlord**: Property management, tenant communication
+- **Tenant**: Property search, applications, payments
 
-- Rent Payment Tracking: MRE provides a comprehensive system for tracking rent payments, helping landlords stay updated on transactions and promptly address any overdue payments.
+### Payment System
+- Stripe integration for card payments
+- PayPal support
+- Automated rent collection
+- Payment history and receipts
 
-- Custom Document Generation: MRE allows landlords to create custom documents for effective communication with tenants. Personalized letters, notices, and announcements can be generated to ensure clear and consistent correspondence.
+### Security
+- JWT-based authentication
+- Role-based access control
+- Secure file uploads
+- Input validation and sanitization
 
-- Collaboration: Whether you are an independent landlord or manage a real estate business with multiple collaborators, MRE supports collaboration and facilitates task coordination within teams.
+## API Endpoints
 
-## Screenshots
+### Properties
+- `GET /api/properties` - List properties with filters
+- `POST /api/properties` - Create new property
+- `GET /api/properties/[id]` - Get property details
+- `PUT /api/properties/[id]` - Update property
+- `DELETE /api/properties/[id]` - Delete property
 
-|                                                                                                                           |                                                                                                                                   |                                                                                                                                       |
-| :-----------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------: |
-|                                                      **Rents page**                                                       |                                                **Send notices, receipt by email**                                                 |                                                            **Pay a rent**                                                             |
-|      [<img src="./documentation/pictures/rents.png" alt="drawing" width="200"/>](./documentation/pictures/rents.png)      | [<img src="./documentation/pictures/sendmassemails.png" alt="drawing" width="200"/>](./documentation/pictures/sendmassemails.png) |          [<img src="./documentation/pictures/payment.png" alt="drawing" width="200"/>](./documentation/pictures/payment.png)          |
-|                                                     **Tenants page**                                                      |                                                        **Tenant details**                                                         |                                                                                                                                       |
-|    [<img src="./documentation/pictures/tenants.png" alt="drawing" width="200"/>](./documentation/pictures/tenants.png)    | [<img src="./documentation/pictures/tenantcontract.png" alt="drawing" width="200"/>](./documentation/pictures/tenantcontract.png) |                                                                                                                                       |
-|                                                    **Properties page**                                                    |                                                       **Property details**                                                        |                                                                                                                                       |
-| [<img src="./documentation/pictures/properties.png" alt="drawing" width="200"/>](./documentation/pictures/properties.png) |       [<img src="./documentation/pictures/property.png" alt="drawing" width="200"/>](./documentation/pictures/property.png)       |                                                                                                                                       |
-|                                                     **Landlord page**                                                     |                                                        **Template leases**                                                        |                                                         **Author a contract**                                                         |
-|   [<img src="./documentation/pictures/landlord.png" alt="drawing" width="200"/>](./documentation/pictures/landlord.png)   |         [<img src="./documentation/pictures/leases.png" alt="drawing" width="200"/>](./documentation/pictures/leases.png)         | [<img src="./documentation/pictures/contracttemplate.png" alt="drawing" width="200"/>](./documentation/pictures/contracttemplate.png) |
-|                                                        **Members**                                                        |                                                                                                                                   |
-|    [<img src="./documentation/pictures/members.png" alt="drawing" width="200"/>](./documentation/pictures/members.png)    |                                                                                                                                   |
+### Payments
+- `POST /api/payments/stripe` - Create Stripe payment intent
+- `POST /api/payments/webhook` - Handle payment webhooks
 
-## Self-host the application
+### File Upload
+- `POST /api/upload` - Upload files
 
-> **Prerequisite**
->
-> - [Install Docker and Compose](https://docs.docker.com/compose/install)
+## Database Schema
 
-### Download the docker-compose.yml file
+The application uses Prisma ORM with PostgreSQL. Key models include:
 
-``` shell
-mkdir mre
-cd mre
-curl https://raw.githubusercontent.com/microrealestate/microrealestate/master/docker-compose.yml > docker-compose.yml
-curl https://raw.githubusercontent.com/microrealestate/microrealestate/master/.env.domain > .env
-```
+- **User**: User accounts with roles
+- **Property**: Property listings
+- **Application**: Rental applications
+- **RentPayment**: Payment records
+- **Document**: File attachments
+- **Notification**: User notifications
 
-Update the secrets and tokens in the `.env` file (at the end of the file).
+## Deployment
 
-**🚨 IMPORTANT**
+### Vercel (Recommended)
+1. Connect your GitHub repository to Vercel
+2. Set environment variables in Vercel dashboard
+3. Deploy automatically on push
 
-In case you previously ran the application, the secrets, the tokens and the MONGO_URL must be reported from previous .env file to the new one.
-Otherwise, the application will not point to the correct database and will not be able to login with the previous credentials.
+### Docker
+1. Build the Docker image:
+\`\`\`bash
+docker build -t klipst .
+\`\`\`
 
-### Localhost setup
+2. Run with docker-compose:
+\`\`\`bash
+docker-compose up -d
+\`\`\`
 
-Start the application under localhost:
+## Contributing
 
-``` shell
-APP_PORT=8080 docker compose --profile local up
-```
-The application will be available on http://localhost:8080/landlord and http://localhost:8080/tenant.
-
-
-### Ip setup
-
-Start the application under a custom ip:
-
-``` shell
-sudo APP_DOMAIN=x.x.x.x docker compose up
-```
-x.x.x.x is the ip address of the server.
-
-The application will be available on http://x.x.x.x/landlord and http://x.x.x.x/tenant.
-
-In case you need to use a port number do not pass it in the APP_DOMAIN. You can use the APP_PORT environment variable.
-
-
-### Domain with https setup
-
-Start the app under a custom domain over https:
-
-``` shell
-sudo APP_DOMAIN=app.example.com APP_PROTOCOL=https docker compose up
-```
-
-Make sure your DNS records are pointing to the private server. The application will automatically issue the ssl certificate.
-
-The application will be available on https://app.example.com/landlord and https://app.example.com/tenant.
-
-
-### Backup and restore the data
-
-The backup and restore commands can be executed when the application is running to allow connecting to MongoDB.
-
-#### Backup
-
-In the mre directory run:
-
-``` shell
-docker compose run mongo /usr/bin/mongodump --uri=mongodb://mongo/mredb --gzip --archive=./backup/mredb-$(date +%F_%T).dump
-```
-
-Replace "mredb" with the name of your database (see .env file). By default, the database name is "mredb".
-
-The archive file will be placed in the "backup" folder.
-
-#### Restore
-
-In the mre/backup directory, select an archive file you want to restore. 
-
-Then run the restore command:
-
-``` shell
-docker compose run mongo /usr/bin/mongorestore --uri=mongodb://mongo/mredb --drop --gzip --archive=./backup/mredb-XXXX.dump 
-```
-
-Where mredb-XXXX.dump is the archive file you selected.
-
-Again, replace "mredb" with the name of your database (see .env file). By default, the database name is "mredb".
-
-
-## Developers
-
-To run the application in development mode, follow the steps outlined in the documentation available [here](./documentation/DEVELOPER.md)
-
-## Donate
-
-Thank you for your interest in supporting MicroRealEstate.
-Every contribution will help us pay our ongoing maintenance and development costs 🙏
-
-[![Donate](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub)](https://github.com/sponsors/camelaissani)
-
-## Contact
-
-LinkedIn: [www.linkedin.com/in/caissani](https://www.linkedin.com/in/caissani/)
-
-X: [@camelaissani](https://x.com/camelaissani)
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
 ## License
 
-The project is licensed under the MIT License. To view the license details, please follow the link below:
+This project is licensed under the MIT License.
 
-[MIT License](./LICENSE)
+## Support
 
-Feel free to review the license terms and conditions to understand the permissions and restrictions associated with the project.
+For support, email support@klipst.com or create an issue on GitHub.
